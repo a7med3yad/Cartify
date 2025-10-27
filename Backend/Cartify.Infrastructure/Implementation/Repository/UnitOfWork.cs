@@ -9,21 +9,74 @@ namespace Cartify.Infrastructure.Implementation.Services
 	{
 
 		private readonly AppDbContext _context;
-		public ICategoryRepository CategoryRepository { get; }
-		public ISubCategoryRepository SubCategoryRepository { get; }
-		public IProductRepository ProductRepository { get; }
 		public IRepository<PasswordResetCode> PasswordResetCodess { get; }
         public IProfileRepository ProfileRepository { get; }
+
+
         public IRepository<TblUserStore> UserStorerepository { get; }
-		public UnitOfWork(AppDbContext context, ISubCategoryRepository SubCategoryRepository, ICategoryRepository CategoryRepository, IProductRepository ProductRepository, IRepository<PasswordResetCode> passwordResetCodess, IProfileRepository ProfileRepository)
+
+        public IRepository<TblProduct> ProductRepository { get;  }
+
+        public IRepository<TblType>  SubCategoryRepository { get; }
+
+        public IRepository<TblCategory> CategoryRepository { get; }
+
+        public IRepository<TblInventory> InventoryRepository { get; }
+
+        public IRepository<TblOrder> OrderRepository { get; }
+
+        public IRepository<TblOrderDetail> OrderDetailsRepository { get; }
+
+        public IRepository<TblProductImage> ImagesRepository { get; }
+
+        public IRepository<TblProductDetail> ProductDetails { get; }
+
+        public IRepository<TblReview> ReviewRepository { get; }
+
+        public IRepository<LkpPromotion> PromotionsRepository { get; }
+
+        public IRepository<lkpAttribute> AttributeRepository { get; }
+
+        public IRepository<LkpMeasureUnite> MeasureUnitRepository { get; }
+
+        public UnitOfWork(
+			AppDbContext context,
+			IRepository<PasswordResetCode> passwordResetCodess,
+			IProfileRepository ProfileRepository,
+            IRepository<TblUserStore> UserStorerepository,
+			IRepository<TblProduct> productRepository,
+			IRepository<TblType> subCategoryRepository,
+			IRepository<TblCategory> categoryRepository,
+			IRepository<TblInventory> inventoryRepository,
+			IRepository<TblOrder> orderRepository,
+			IRepository<TblOrderDetail> orderDetailsRepository,
+			IRepository<TblProductImage> imagesRepository,
+			IRepository<TblProductDetail> productDetails,
+			IRepository<TblReview> reviewRepository,
+			IRepository<LkpPromotion> promotionsRepository,
+			IRepository<lkpAttribute> attributeRepository,
+			IRepository<LkpMeasureUnite> measureUnitRepository
+
+            )
 		{
 			_context = context;
-			this.CategoryRepository = CategoryRepository;
-			this.SubCategoryRepository = SubCategoryRepository;
-			this.ProductRepository = ProductRepository;
 			this.PasswordResetCodess = passwordResetCodess;
 			this.ProfileRepository = ProfileRepository;
-		}
+			this.AttributeRepository = attributeRepository;
+			this.UserStorerepository = UserStorerepository;
+			this.ProductRepository = productRepository;
+			this.SubCategoryRepository = subCategoryRepository;
+			this.CategoryRepository = categoryRepository;
+			this.InventoryRepository = inventoryRepository;
+			this.OrderRepository = orderRepository;
+			this.OrderDetailsRepository = orderDetailsRepository;
+			this.ImagesRepository = imagesRepository;
+			this.ProductDetails = productDetails;
+			this.ReviewRepository = reviewRepository;
+			this.PromotionsRepository = promotionsRepository;
+			this.MeasureUnitRepository = measureUnitRepository;
+
+        }
 
 		public void Dispose()
 		{

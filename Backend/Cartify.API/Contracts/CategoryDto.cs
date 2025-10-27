@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cartify.Application.Contracts
 {
-    public class ProductAttributeDto
+    internal class CategoryDto
     {
-        public string AttributeName { get; set; }
-        public string MeasureUnit { get; set; }
     }
-
 }

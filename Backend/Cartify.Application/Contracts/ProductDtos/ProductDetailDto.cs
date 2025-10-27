@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cartify.Application.Contracts {
+namespace Cartify.Application.Contracts.ProductDtos {
     public class ProductDetailDto
     {
         public int ProductDetailId { get; set; }
@@ -12,15 +12,12 @@ namespace Cartify.Application.Contracts {
         public decimal Price { get; set; }
         public string Description { get; set; }
 
-        public List<string> ProductImages { get; set; } = new();
+        public List<ProductImageDto> ProductImages { get; set; } = new();
+        public List<ProductAttributeDto> Attributes { get; set; } = new();
 
         public int QuantityAvailable { get; set; }
         public int QuantityReserved { get; set; }
 
-        public string TypeName { get; set; }
-        public string CategoryName { get; set; }
-
-        public List<ProductAttributeDto> Attributes { get; set; } = new();
     }
 
 

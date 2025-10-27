@@ -1,0 +1,59 @@
+using Cartify.Application.Contracts;
+using Cartify.Application.Contracts.ProductDtos;
+using Cartify.Application.Services.Interfaces.Merchant;
+using Cartify.Domain.Interfaces.Repositories;
+using Cartify.Domain.Models;
+using Cartify.Infrastructure.Implementation.Repository;
+using Microsoft.AspNetCore.Http;
+
+public class MerchantProductServices : IMerchantProductService
+{
+
+
+
+    public MerchantProductServices(IRepository<TblProduct> _productRepository, IRepository<TblType> _type)
+    {
+        this._productRepository = _productRepository;
+        this._type = _type;
+    }
+
+    public Task<bool> AddProductAsync(CreateProductDto dto)
+    {
+
+    }
+
+    public Task<bool> AddProductImagesAsync(int productId, List<IFormFile> images)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteProductAsync(int productId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PagedResult<ProductDto>> GetAllProductsByMerchantIdAsync(string merchantId, int page = 1, int pageSize = 10)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ProductDto?> GetProductByIdAsync(int productId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PagedResult<ProductDto>> GetProductsByNameAsync(string name, int page = 1, int pageSize = 10)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PagedResult<ProductDto>> GetProductsByTypeIdAsync(int typeId, int page = 1, int pageSize = 10)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> UpdateProductAsync(int productId, CreateProductDto dto)
+    {
+        throw new NotImplementedException();
+    }
+}
