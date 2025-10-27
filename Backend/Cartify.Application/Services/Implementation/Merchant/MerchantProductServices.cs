@@ -9,16 +9,28 @@ namespace Cartify.Application.Services.Implementation.Merchant
 {
     public class MerchantProductServices : IMerchantProductServices
     {
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MerchantProductServices(IRepository<TblProduct> _productRepository, IRepository<TblType> _type)
+        public MerchantProductServices(IUnitOfWork _unitOfWork)
         {
-            this._productRepository = _productRepository;
-            this._type = _type;
+        this._unitOfWork = _unitOfWork;
         }
 
-        public Task<bool> AddProductAsync(CreateProductDto dto)
+        public async Task<bool> AddProductAsync(CreateProductDto dto)
         {
-
+            var _product = new TblProduct
+            {
+                ProductName = dto.ProductName,
+                ProductDescription = dto.ProductDescription,
+                TypeId = dto.TypeId,
+                UserStoreId = dto.StoreId,
+            };
+            if (_product == null)
+            {
+                return false;
+            }
+            await _unitOfWork.ProductRepository.CreateAsync(_product);
+            return await _unitOfWork.SaveChanges() > 0;
         }
 
         public Task<bool> AddProductImagesAsync(int productId, List<IFormFile> images)
