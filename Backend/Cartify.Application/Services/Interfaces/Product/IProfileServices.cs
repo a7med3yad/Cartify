@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cartify.Application.Services.Interfaces
+namespace Cartify.Application.Services.Interfaces.Product
 {
     public interface IProfileServices
     {

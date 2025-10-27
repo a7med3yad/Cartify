@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Cartify.Application.Services.Interfaces.Merchant
 {
-    public interface IMerchantProductService
+    public interface IMerchantProductServices
     {
         Task<PagedResult<ProductDto>> GetAllProductsByMerchantIdAsync(string merchantId, int page = 1, int pageSize = 10);
         Task<PagedResult<ProductDto>> GetProductsByTypeIdAsync(int typeId, int page = 1, int pageSize = 10);

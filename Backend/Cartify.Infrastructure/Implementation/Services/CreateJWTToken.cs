@@ -1,16 +1,15 @@
 ﻿using Cartify.Domain.Models;
 using Cartify.Infrastructure.Implementation.Services.Helper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
-using Cartify.Application.Contracts;
 
 using Cartify.Domain.Entities;
 using Cartify.Application.Services.Interfaces.Authentication;
+using Cartify.Application.Contracts.AuthenticationDtos;
 namespace Cartify.Infrastructure.Implementation.Services
 {
 

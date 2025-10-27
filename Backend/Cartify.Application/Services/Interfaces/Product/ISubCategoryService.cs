@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cartify.Domain.Interfaces.Repositories
+namespace Cartify.Application.Services.Interfaces.Product
 {
-    public interface ISubCategoryRepository : IRepository<TblType>
+    public interface ISubCategoryService
     {
         Task<IEnumerable<TblType>> GetAllSubCategories();
-        Task<IEnumerable<TblType>> GetSubCategoriesByCategoryIdAsync(int categoryId);
     }
 }
