@@ -1,4 +1,5 @@
 ﻿using Cartify.Application.Contracts;
+using Cartify.Application.Contracts.ProductDtos;
 using Cartify.Application.Services.Interfaces;
 using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Domain.Models;

@@ -1,4 +1,5 @@
 ﻿using Cartify.Application.Contracts;
+using Cartify.Application.Contracts.ProductDtos;
 using Cartify.Domain.Models;
 using System;
 using System.Collections.Generic;
