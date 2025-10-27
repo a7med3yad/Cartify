@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cartify.Application.Contracts
+namespace Cartify.Application.Contracts.AuthenticationDtos
 {
 	public class dtoLogin
 	{

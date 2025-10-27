@@ -1,10 +1,12 @@
+using Cartify.API.Extensions;
 using Cartify.Application.Mappings;
 using Cartify.Application.Services.Implementation;
 using Cartify.Application.Services.Implementation.Authentication;
-using Cartify.Application.Services.Implementation.Category;
+using Cartify.Application.Services.Implementation.Merchant;
 using Cartify.Application.Services.Implementation.Profile;
-using Cartify.Application.Services.Interfaces;
 using Cartify.Application.Services.Interfaces.Authentication;
+using Cartify.Application.Services.Interfaces.Merchant;
+using Cartify.Application.Services.Interfaces.Product;
 using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Domain.Models;
 using Cartify.Infrastructure.Implementation.Repository;
@@ -47,34 +49,15 @@ namespace Cartify.API
 				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<AppDbContext>()
 				.AddDefaultTokenProviders();
-			
-			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-			builder.Services.AddScoped<ILoginService, LoginService>();
-			builder.Services.AddScoped<IRegisterService, RegisterService>();
-			builder.Services.AddScoped<ICreateJWTToken,CreateJWTToken>();
-			builder.Services.AddScoped<IUserService, UserService>();
-			builder.Services.AddAutoMapper(typeof(MappingProfile));
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddCartifyServices();
 
-			builder.Services.AddScoped<IProductServices, ProductServices>();
 
-			builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-			builder.Services.AddScoped<IEmailSender,EmailSender>();
-			builder.Services.AddScoped<IResetPassword, ResetPassword>();
-			builder.Services.AddScoped<ICreateMerchantProfile, CreateMerchantProfile>();
 
-            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
-            builder.Services.AddScoped<IProfileServices, ProfileServices>();
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-			builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi();
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
 			builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
 

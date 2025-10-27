@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Cartify.Application.Contracts;
+using Cartify.Application.Contracts.AuthenticationDtos;
 using Cartify.Domain.Models;
 namespace Cartify.Application.Mappings
 {

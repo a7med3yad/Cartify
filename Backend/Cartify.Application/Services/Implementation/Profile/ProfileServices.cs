@@ -1,4 +1,4 @@
-﻿using Cartify.Application.Services.Interfaces;
+﻿using Cartify.Application.Services.Interfaces.Product;
 using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Domain.Models;
 using System;

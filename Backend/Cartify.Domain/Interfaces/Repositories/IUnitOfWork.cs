@@ -19,11 +19,6 @@ public interface IUnitOfWork : IDisposable
     public IRepository<LkpPromotion> PromotionsRepository { get; }
     public IRepository<lkpAttribute> AttributeRepository { get; }
     public IRepository<LkpMeasureUnite> MeasureUnitRepository { get; }
-
-
-
-
-
     Task<int> SaveChanges();
 
 }

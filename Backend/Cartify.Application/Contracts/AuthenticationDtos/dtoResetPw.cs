@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cartify.Application.Contracts
+namespace Cartify.Application.Contracts.AuthenticationDtos
 {
 	public class dtoSendEmail
 	{
