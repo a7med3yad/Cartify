@@ -29,7 +29,7 @@ namespace Cartify.Infrastructure.Implementation.Services
 
         public IRepository<TblProductImage> ImagesRepository { get; }
 
-        public IRepository<TblProductDetail> ProductDetails { get; }
+        public IRepository<TblProductDetail> ProductDetailsRepository { get; }
 
         public IRepository<TblReview> ReviewRepository { get; }
 
