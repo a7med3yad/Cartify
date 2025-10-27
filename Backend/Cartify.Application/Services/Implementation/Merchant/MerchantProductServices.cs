@@ -35,7 +35,26 @@ namespace Cartify.Application.Services.Implementation.Merchant
 
         public Task<bool> AddProductImagesAsync(int productId, List<IFormFile> images)
         {
-            throw new NotImplementedException();
+            var product =  _unitOfWork.ProductRepository.ReadByIdAsync(productId);
+            if (product == null)
+            {
+                return Task.FromResult(false);
+            }
+            product.Result.TblProductImages = new List<TblProductImage>();
+            foreach (var image in images)
+            {
+                using var memoryStream = new MemoryStream();
+                image.CopyTo(memoryStream);
+                var productImage = new TblProductImage
+                {
+                    ProductId = productId,
+                    ImageData = memoryStream.ToArray(),
+                    ImageName = image.FileName,
+                    ContentType = image.ContentType
+                };
+                product.Result.TblProductImages.Add(productImage);
+            }
+
         }
 
         public Task<bool> DeleteProductAsync(int productId)
