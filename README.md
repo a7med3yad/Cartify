@@ -5,7 +5,7 @@
 [![Pull Requests](https://img.shields.io/github/issues-pr/Taqey/Cartify?style=flat-square)](https://github.com/Taqey/Cartify/pulls)
 [![Stars](https://img.shields.io/github/stars/Taqey/Cartify?style=flat-square)](https://github.com/Taqey/Cartify/stargazers)
 [![Forks](https://img.shields.io/github/forks/Taqey/Cartify?style=flat-square)](https://github.com/Taqey/Cartify/network/members)
-[![.NET](https://img.shields.io/badge/Backend-.NET%208-68217A?logo=dotnet&style=flat-square)](#)
+[![.NET](https://img.shields.io/badge/Backend-.NET%209-68217A?logo=dotnet&style=flat-square)](#)
 [![DB](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver&style=flat-square)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20JS-333?logo=html5&style=flat-square)](#)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&style=flat-square)](#)
