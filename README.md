@@ -76,7 +76,7 @@ Cartify follows **Clean Architecture** and **SOLID principles**, divided into fo
 │                      Domain Layer                           │
 │         (Entities, Value Objects, Domain Logic)             │
 └─────────────────────────────────────────────────────────────┘
-                              ↓
+                              ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                  Infrastructure Layer                       │
 │     (EF Core, Repositories, External Services, Data)        │
