@@ -17,9 +17,11 @@ namespace Cartify.Infrastructure.Implementation.Repository
         public bool HasPreviousPage => PageNumber > 1;
         public bool HasNextPage => PageNumber < TotalPages;
 
+        public PagedResult() { }
+
         public PagedResult(IEnumerable<T> items, int totalCount, int pageNumber, int pageSize)
         {
-            Items = items;
+            Items = items ?? Enumerable.Empty<T>();
             TotalCount = totalCount;
             PageNumber = pageNumber;
             PageSize = pageSize;

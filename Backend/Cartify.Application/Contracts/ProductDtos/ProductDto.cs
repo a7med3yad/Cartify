@@ -13,6 +13,7 @@ namespace Cartify.Application.Contracts
         public string ProductDescription { get; set; }
         public string TypeName { get; set; }
         public string CategoryName { get; set; }
+        public int StoreId { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }

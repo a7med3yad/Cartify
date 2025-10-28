@@ -8,9 +8,13 @@ namespace Cartify.Application.Contracts.ProductDtos
 {
     public class ProductImageDto
     {
-        public int ImageId { get; set; }
+
+        public int Id { get; set; }
         public int ProductId { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageURL { get; set; }
+        public string? ImageName { get; set; }
         public bool IsDeleted { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

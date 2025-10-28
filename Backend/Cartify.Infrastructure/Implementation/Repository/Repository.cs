@@ -41,7 +41,20 @@ namespace Cartify.Infrastructure.Implementation.Repository
 			}
 			return await query.AsNoTracking().ToListAsync();
 		}
-		public async Task<IEnumerable<TResult>> GetWithSelect<TResult>(Expression<Func<T, TResult>> selector,params Expression<Func<T, object>>[] includes)
+        public IQueryable<T> GetAllIncluding2(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _appDbContext.Set<T>();
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return query;
+        }
+
+
+        public async Task<IEnumerable<TResult>> GetWithSelect<TResult>(Expression<Func<T, TResult>> selector,params Expression<Func<T, object>>[] includes)
 		{
 			IQueryable<T> query = _entity.AsQueryable();
 

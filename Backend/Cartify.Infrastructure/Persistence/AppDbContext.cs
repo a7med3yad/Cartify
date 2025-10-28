@@ -17,6 +17,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
         : base(options)
     {
     }
+   
 
     public virtual DbSet<LkpMeasureUnite> LkpMeasureUnites { get; set; }
     public virtual DbSet<LkpOrderStatue> LkpOrderStatues { get; set; }
@@ -193,19 +194,25 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
 
             entity.ToTable("TblInventory");
 
-            entity.HasIndex(e => e.ProductDetailId, "IX_TblInventory_ProductDetailId");
+            entity.HasIndex(e => e.ProductDetailId, "IX_TblInventory_ProductDetailId")
+                .IsUnique(); 
 
             entity.Property(e => e.InventoryId).ValueGeneratedNever();
+
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.DeletedDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.ProductDetail).WithMany(p => p.TblInventories)
-                .HasForeignKey(d => d.ProductDetailId)
+            entity.Property(e => e.DeletedDate)
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.ProductDetail)
+                .WithOne(p => p.Inventory) 
+                .HasForeignKey<TblInventory>(d => d.ProductDetailId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TblInventory_TblProductDetails1");
         });
+
 
         modelBuilder.Entity<TblOrder>(entity =>
         {

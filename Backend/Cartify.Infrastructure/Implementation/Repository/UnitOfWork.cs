@@ -28,7 +28,7 @@ namespace Cartify.Infrastructure.Implementation.Services
         public IRepository<TblOrderDetail> OrderDetailsRepository { get; }
 
         public IRepository<TblProductImage> ImagesRepository { get; }
-
+        public IRepository<TblProductDetail> ProductDetails { get; }
         public IRepository<TblProductDetail> ProductDetailsRepository { get; }
 
         public IRepository<TblReview> ReviewRepository { get; }
@@ -71,7 +71,7 @@ namespace Cartify.Infrastructure.Implementation.Services
 			this.OrderRepository = orderRepository;
 			this.OrderDetailsRepository = orderDetailsRepository;
 			this.ImagesRepository = imagesRepository;
-			this.ProductDetails = productDetails;
+			this.ProductDetailsRepository = productDetails;
 			this.ReviewRepository = reviewRepository;
 			this.PromotionsRepository = promotionsRepository;
 			this.MeasureUnitRepository = measureUnitRepository;
