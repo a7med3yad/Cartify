@@ -8,12 +8,20 @@
 
   <ItemGroup>
     <Compile Remove="FakesAssemblies\**" />
+    <Compile Remove="Services\Implementation\Category\**" />
+    <Compile Remove="Services\Implementation\Product\**" />
     <EmbeddedResource Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="Services\Implementation\Category\**" />
+    <EmbeddedResource Remove="Services\Implementation\Product\**" />
     <None Remove="FakesAssemblies\**" />
+    <None Remove="Services\Implementation\Category\**" />
+    <None Remove="Services\Implementation\Product\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Amazon.S3" Version="0.34.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.8" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
@@ -29,8 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Implementation\Category\" />
-    <Folder Include="Services\Implementation\Product\" />
     <Folder Include="Services\Interfaces\Merchant\" />
   </ItemGroup>
 

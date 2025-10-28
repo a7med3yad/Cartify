@@ -101,7 +101,7 @@ Cartify follows **Clean Architecture** and **SOLID principles**, divided into fo
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?logo=bootstrap&logoColor=white)
 
 ### ⚙️ Backend
-![.NET](https://img.shields.io/badge/.NET%208-512BD4?logo=dotnet&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET%209-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)
 ![EntityFramework](https://img.shields.io/badge/Entity%20Framework-68217A?logo=ef&logoColor=white)
 ![SQLServer](https://img.shields.io/badge/SQL%20Server-CC2927?logo=microsoftsqlserver&logoColor=white)

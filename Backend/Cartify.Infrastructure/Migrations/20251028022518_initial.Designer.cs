@@ -4,6 +4,7 @@ using Cartify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cartify.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251028022518_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -420,8 +423,7 @@ namespace Cartify.Infrastructure.Migrations
 
                     b.HasKey("InventoryId");
 
-                    b.HasIndex(new[] { "ProductDetailId" }, "IX_TblInventory_ProductDetailId")
-                        .IsUnique();
+                    b.HasIndex(new[] { "ProductDetailId" }, "IX_TblInventory_ProductDetailId");
 
                     b.ToTable("TblInventory", (string)null);
                 });
@@ -1230,8 +1232,8 @@ namespace Cartify.Infrastructure.Migrations
             modelBuilder.Entity("Cartify.Domain.Models.TblInventory", b =>
                 {
                     b.HasOne("Cartify.Domain.Models.TblProductDetail", "ProductDetail")
-                        .WithOne("Inventory")
-                        .HasForeignKey("Cartify.Domain.Models.TblInventory", "ProductDetailId")
+                        .WithMany("TblInventories")
+                        .HasForeignKey("ProductDetailId")
                         .IsRequired()
                         .HasConstraintName("FK_TblInventory_TblProductDetails1");
 
@@ -1531,9 +1533,9 @@ namespace Cartify.Infrastructure.Migrations
 
             modelBuilder.Entity("Cartify.Domain.Models.TblProductDetail", b =>
                 {
-                    b.Navigation("Inventory");
-
                     b.Navigation("LkpProductDetailsAttributes");
+
+                    b.Navigation("TblInventories");
                 });
 
             modelBuilder.Entity("Cartify.Domain.Models.TblType", b =>

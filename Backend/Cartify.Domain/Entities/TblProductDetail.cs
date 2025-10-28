@@ -16,11 +16,22 @@ public partial class TblProductDetail
     public decimal Price { get; set; }
 
     public string Description { get; set; }
+    public int? CreatedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime CreatedDate { get; set; }
+
+    public int? UpdatedBy { get; set; }
+
+    public int? DeletedBy { get; set; }
+
+    public DateTime? DeletedDate { get; set; }
 
     public virtual ICollection<LkpProductDetailsAttribute> LkpProductDetailsAttributes { get; set; } = new List<LkpProductDetailsAttribute>();
     public virtual ICollection<LkpPromotion> Promotions { get; set; } = new List<LkpPromotion>();
 
     public virtual TblProduct Product { get; set; }
 
-    public virtual ICollection<TblInventory> TblInventories { get; set; } = new List<TblInventory>();
+    public virtual TblInventory Inventory { get; set; }
 }

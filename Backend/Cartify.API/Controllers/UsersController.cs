@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Cartify.API.Contracts;
 using Cartify.Application.Contracts;
+using Cartify.Application.Contracts.AuthenticationDtos;
 using Cartify.Application.Services.Interfaces.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
