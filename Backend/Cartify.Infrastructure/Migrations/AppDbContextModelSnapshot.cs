@@ -420,7 +420,8 @@ namespace Cartify.Infrastructure.Migrations
 
                     b.HasKey("InventoryId");
 
-                    b.HasIndex(new[] { "ProductDetailId" }, "IX_TblInventory_ProductDetailId");
+                    b.HasIndex(new[] { "ProductDetailId" }, "IX_TblInventory_ProductDetailId")
+                        .IsUnique();
 
                     b.ToTable("TblInventory", (string)null);
                 });
@@ -599,9 +600,24 @@ namespace Cartify.Infrastructure.Migrations
                     b.Property<int>("ProductDetailId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18, 2)");
@@ -614,6 +630,9 @@ namespace Cartify.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
 
                     b.HasKey("ProductDetailId");
 
@@ -1211,8 +1230,8 @@ namespace Cartify.Infrastructure.Migrations
             modelBuilder.Entity("Cartify.Domain.Models.TblInventory", b =>
                 {
                     b.HasOne("Cartify.Domain.Models.TblProductDetail", "ProductDetail")
-                        .WithMany("TblInventories")
-                        .HasForeignKey("ProductDetailId")
+                        .WithOne("Inventory")
+                        .HasForeignKey("Cartify.Domain.Models.TblInventory", "ProductDetailId")
                         .IsRequired()
                         .HasConstraintName("FK_TblInventory_TblProductDetails1");
 
@@ -1512,9 +1531,9 @@ namespace Cartify.Infrastructure.Migrations
 
             modelBuilder.Entity("Cartify.Domain.Models.TblProductDetail", b =>
                 {
-                    b.Navigation("LkpProductDetailsAttributes");
+                    b.Navigation("Inventory");
 
-                    b.Navigation("TblInventories");
+                    b.Navigation("LkpProductDetailsAttributes");
                 });
 
             modelBuilder.Entity("Cartify.Domain.Models.TblType", b =>

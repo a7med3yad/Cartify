@@ -1,4 +1,4 @@
-﻿using Cartify.Application.Contracts;
+﻿using Cartify.Application.Contracts.AuthenticationDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

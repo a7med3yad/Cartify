@@ -1,10 +1,16 @@
+﻿// Replace this line:
+// using AWSSDK.S3;
+
+// With this correct AWS SDK namespace:
+using Amazon.S3;
 using Cartify.Application.Mappings;
 using Cartify.Application.Services.Implementation;
 using Cartify.Application.Services.Implementation.Authentication;
-using Cartify.Application.Services.Implementation.Category;
+using Cartify.Application.Services.Implementation.Merchant;
 using Cartify.Application.Services.Implementation.Profile;
-using Cartify.Application.Services.Interfaces;
 using Cartify.Application.Services.Interfaces.Authentication;
+using Cartify.Application.Services.Interfaces.Merchant;
+using Cartify.Application.Services.Interfaces.Product;
 using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Domain.Models;
 using Cartify.Infrastructure.Implementation.Repository;
@@ -14,6 +20,7 @@ using Cartify.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -47,34 +54,53 @@ namespace Cartify.API
 				.AddRoles<IdentityRole>()
 				.AddEntityFrameworkStores<AppDbContext>()
 				.AddDefaultTokenProviders();
-			
-			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-			builder.Services.AddScoped<ILoginService, LoginService>();
-			builder.Services.AddScoped<IRegisterService, RegisterService>();
-			builder.Services.AddScoped<ICreateJWTToken,CreateJWTToken>();
-			builder.Services.AddScoped<IUserService, UserService>();
-			builder.Services.AddAutoMapper(typeof(MappingProfile));
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            // 👤 User Services
+            builder.Services.AddScoped<IUserService, UserService>();
 
-			builder.Services.AddScoped<IProductServices, ProductServices>();
+            // 🧠 Authentication
+            builder.Services.AddScoped<ILoginService, LoginService>();
+            builder.Services.AddScoped<IRegisterService, RegisterService>();
+            builder.Services.AddScoped<ICreateJWTToken, CreateJWTToken>();
+            builder.Services.AddScoped<IResetPassword, ResetPassword>();
 
-			builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-			builder.Services.AddScoped<IEmailSender,EmailSender>();
-			builder.Services.AddScoped<IResetPassword, ResetPassword>();
-			builder.Services.AddScoped<ICreateMerchantProfile, CreateMerchantProfile>();
 
+            // Amazon S3 Client
+
+            builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+            builder.Services.AddAWSService<IAmazonS3>();
+
+            builder.Services.AddScoped<IFileStorageService, S3FileStorageService>();
+
+            // 🧱 Infrastructure Repositories
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // 📧 Email + Helper
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<ICreateMerchantProfile, CreateMerchantProfile>();
+
+            // 👤 Profile
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
             builder.Services.AddScoped<IProfileServices, ProfileServices>();
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            // 🛍️ Merchant Services
+            builder.Services.AddScoped<IMerchantProductServices, MerchantProductServices>();
+            builder.Services.AddScoped<IMerchantCategoryServices, MerchantCategoryServices>();
+            builder.Services.AddScoped<IMerchantCustomerServices, MerchantCustomerServices>();
+            builder.Services.AddScoped<IMerchantInventoryServices, MerchantInventoryServices>();
+            builder.Services.AddScoped<IMerchantOrderServices, MerchantOrderServices>();
+            builder.Services.AddScoped<IMerchantTransactionServices, MerchantTransactionServices>();
+            builder.Services.AddScoped<IMerchantProfileServices, MerchantProfileServices>();
 
-			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            builder.Services.AddScoped<IFileStorageService, S3FileStorageService>();
 
-			builder.Services.AddOpenApi();
+
+            // 🧩 Mapping Profiles
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+            builder.Services.AddOpenApi();
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
 			builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
 

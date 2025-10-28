@@ -1,4 +1,4 @@
-﻿using Cartify.Application.Contracts;
+﻿using Cartify.Application.Contracts.AuthenticationDtos;
 using Cartify.Application.Services.Interfaces.Authentication;
 using Cartify.Domain.Entities;
 using Cartify.Domain.Interfaces.Repositories;

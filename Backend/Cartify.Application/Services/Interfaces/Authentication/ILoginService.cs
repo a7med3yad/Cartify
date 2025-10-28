@@ -1,4 +1,4 @@
-﻿using Cartify.Application.Contracts;
+﻿using Cartify.Application.Contracts.AuthenticationDtos;
 
 namespace Cartify.Application.Services.Interfaces.Authentication
 {
