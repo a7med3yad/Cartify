@@ -5,7 +5,7 @@ using Cartify.Infrastructure.Persistence;
 
 namespace Cartify.Infrastructure.Implementation.Services
 {
-	public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
 	{
 
 		private readonly AppDbContext _context;
@@ -39,9 +39,12 @@ namespace Cartify.Infrastructure.Implementation.Services
 
         public IRepository<LkpMeasureUnite> MeasureUnitRepository { get; }
 
+        public IRepository<LkpOrderStatue> OrderStatusRepository { get; }
+
         public UnitOfWork(
 			AppDbContext context,
-			IRepository<PasswordResetCode> passwordResetCodess,
+            IRepository<LkpOrderStatue> OrderStatusRepository,
+            IRepository<PasswordResetCode> passwordResetCodess,
 			IProfileRepository ProfileRepository,
             IRepository<TblUserStore> UserStorerepository,
 			IRepository<TblProduct> productRepository,
@@ -75,6 +78,7 @@ namespace Cartify.Infrastructure.Implementation.Services
 			this.ReviewRepository = reviewRepository;
 			this.PromotionsRepository = promotionsRepository;
 			this.MeasureUnitRepository = measureUnitRepository;
+			this.OrderStatusRepository = OrderStatusRepository;
 
         }
 

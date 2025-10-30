@@ -4,7 +4,8 @@ using Cartify.Domain.Models;
 namespace Cartify.Domain.Interfaces.Repositories;
 public interface IUnitOfWork : IDisposable
 {
-	public IRepository<PasswordResetCode> PasswordResetCodess { get; }
+    public IRepository<LkpOrderStatue> OrderStatusRepository { get; }
+    public IRepository<PasswordResetCode> PasswordResetCodess { get; }
 	public IRepository<TblUserStore> UserStorerepository { get; }
     public IProfileRepository ProfileRepository { get; }
     public IRepository<TblProduct> ProductRepository { get; }
