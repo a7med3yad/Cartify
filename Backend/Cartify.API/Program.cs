@@ -1,8 +1,4 @@
-﻿// Replace this line:
-// using AWSSDK.S3;
-
-// With this correct AWS SDK namespace:
-using Amazon.S3;
+﻿using Amazon.S3;
 using Cartify.Application.Mappings;
 using Cartify.Application.Services.Implementation;
 using Cartify.Application.Services.Implementation.Authentication;
@@ -24,67 +20,62 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+
 namespace Cartify.API
 {
-	public class Program
-	{
-		public static void Main(string[] args)
-		{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-			var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddUserSecrets<Program>()
+                .AddEnvironmentVariables();
 
-			// Add services to the container.
+            builder.Services.AddControllers();
 
-			builder.Services.AddControllers();
-			builder.Services.AddCors(options =>
-			{
-				options.AddPolicy("AllowFrontend",
-					policy =>
-					{
-						policy.WithOrigins("http://127.0.0.1:5500") 
-							  .AllowAnyMethod()
-							  .AllowAnyHeader()
-							  .AllowCredentials(); 
-					});
-			});
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://127.0.0.1:5500")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
+            });
 
-			builder.Services.AddDbContext<AppDbContext>(options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-			builder.Services.AddIdentityCore<TblUser>()
-				.AddRoles<IdentityRole>()
-				.AddEntityFrameworkStores<AppDbContext>()
-				.AddDefaultTokenProviders();
+            builder.Services.AddIdentityCore<TblUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
-            // 👤 User Services
+            // Authentication services
             builder.Services.AddScoped<IUserService, UserService>();
-
-            // 🧠 Authentication
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IRegisterService, RegisterService>();
             builder.Services.AddScoped<ICreateJWTToken, CreateJWTToken>();
             builder.Services.AddScoped<IResetPassword, ResetPassword>();
 
-
-            // Amazon S3 Client
-
+            // AWS S3
             builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
             builder.Services.AddAWSService<IAmazonS3>();
-
             builder.Services.AddScoped<IFileStorageService, S3FileStorageService>();
 
-            // 🧱 Infrastructure Repositories
+            // Infrastructure
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // 📧 Email + Helper
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ICreateMerchantProfile, CreateMerchantProfile>();
 
-            // 👤 Profile
+            // Profile + Merchant
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
             builder.Services.AddScoped<IProfileServices, ProfileServices>();
-
-            // 🛍️ Merchant Services
             builder.Services.AddScoped<IMerchantProductServices, MerchantProductServices>();
             builder.Services.AddScoped<IMerchantCategoryServices, MerchantCategoryServices>();
             builder.Services.AddScoped<IMerchantCustomerServices, MerchantCustomerServices>();
@@ -93,110 +84,84 @@ namespace Cartify.API
             builder.Services.AddScoped<IMerchantTransactionServices, MerchantTransactionServices>();
             builder.Services.AddScoped<IMerchantProfileServices, MerchantProfileServices>();
 
-            builder.Services.AddScoped<IFileStorageService, S3FileStorageService>();
-
-
-            // 🧩 Mapping Profiles
             builder.Services.AddAutoMapper(typeof(MappingProfile));
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-            builder.Services.AddOpenApi();
-			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
-			builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
+            builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
+            builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
+            builder.Services.AddHttpContextAccessor();
 
-			builder.Services.AddHttpContextAccessor();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(option =>
+            {
+                var filepath = Path.Combine(AppContext.BaseDirectory, "Cartify.API.xml");
+                option.IncludeXmlComments(filepath);
+                option.SwaggerDoc("v1",
+                   new OpenApiInfo
+                   {
+                       Title = "Cartify API",
+                       Version = "v1",
+                       Description = "ASP.NET Core WebAPI for Ecommerce",
+                       Contact = new OpenApiContact
+                       {
+                           Name = "Ahmed Ayad",
+                           Email = "ahmed.ibrahim01974@gmail.com",
+                       },
+                   });
+                option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
 
-			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-			builder.Services.AddOpenApi();
-			builder.Services.AddEndpointsApiExplorer();
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
+            });
 
-			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-			{
-				options.TokenValidationParameters = new TokenValidationParameters
-				{
-					ValidateAudience = true,
-					ValidateIssuer = true,
-					ValidateLifetime = true,
-					ValidateIssuerSigningKey = true,
-					ValidIssuer = builder.Configuration["Jwt:Issuer"],
-					ValidAudience = builder.Configuration["Jwt:Audience"],
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-					ClockSkew=TimeSpan.Zero
-				};
-			});
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
-			builder.Services.AddSwaggerGen(option => {
-				var filepath = Path.Combine(System.AppContext.BaseDirectory, "Cartify.API.xml");
-				option.IncludeXmlComments(filepath);
-				option.SwaggerDoc("v1",
-				   new OpenApiInfo
-				   {
-					   Title = "Cartify API",
-					   Version = "v1",
-					   Description = " ASP.NET Core WebAPI for Ecommerce ",
-					   TermsOfService = new Uri("http://tempuri.org/terms"),
-					   Contact = new OpenApiContact
-					   {
-						   Name = "Taqeyy Eldeen",
-						   Email = "atakieeldeen@gmail.com",
-					   },
-				   });
-				option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-				{
-					Name="Authorization",
-					In=ParameterLocation.Header,
-					Type=SecuritySchemeType.ApiKey,
-					Scheme=JwtBearerDefaults.AuthenticationScheme
-				});
+            var app = builder.Build();
 
-				option.AddSecurityRequirement(new OpenApiSecurityRequirement
-				{
-					{
-						new OpenApiSecurityScheme
-						{
-							Reference=new OpenApiReference
-							{
-								Type=ReferenceType.SecurityScheme,
-								Id=JwtBearerDefaults.AuthenticationScheme
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseCors("AllowFrontend");
+                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
-							},
-
-							In=ParameterLocation.Header,
-							Scheme="Oauth2",
-							Name="Authorization"
-							
-
-
-						},new List<string>()
-					}
-
-				});
-			});
-
-
-			var app = builder.Build();
-
-			// Configure the HTTP request pipeline.
-			if (app.Environment.IsDevelopment())
-			{
-				app.UseCors("AllowAll");
-				app.MapOpenApi();
-				app.UseSwagger();
-				app.UseSwaggerUI();
-			}
-
-			app.UseHttpsRedirection();
-			app.UseCors("AllowFrontend");
-
-
-			app.UseAuthentication();
-
-			app.UseAuthorization();
-
-
-			app.MapControllers();
-
-			app.Run();
-		}
-	}
+            app.UseHttpsRedirection();
+            app.UseCors("AllowFrontend");
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapControllers();
+            app.Run();
+        }
+    }
 }

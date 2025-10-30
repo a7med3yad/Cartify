@@ -107,7 +107,7 @@ namespace Cartify.Application.Services.Implementation.Merchant
 
         public async Task<PagedResult<ProductDto>> GetAllProductsByMerchantIdAsync(string merchantId, int page = 1, int pageSize = 10)
         {
-            var store = await _unitOfWork.UserStorerepository.Search(s => s.UserId == merchantId && !s.IsDeleted);
+            var store = await _unitOfWork.UserStorerepository.Search(s => s.MerchantId == merchantId && !s.IsDeleted);
 
             if (store == null)
                 return new PagedResult<ProductDto>(Enumerable.Empty<ProductDto>(), 0, page, pageSize);
