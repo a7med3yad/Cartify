@@ -1,55 +1,81 @@
-using Cartify.Application.Contracts.CategoryDtos;
-using Cartify.Application.Contracts.CustomerDtos;
+﻿using Cartify.Application.Contracts.CustomerDtos;
 using Cartify.Application.Services.Interfaces.Merchant;
+using Cartify.Domain.Interfaces.Repositories;
+using Cartify.Domain.Models;
 using Cartify.Infrastructure.Implementation.Repository;
+using System.Linq;
 
 namespace Cartify.Application.Services.Implementation.Merchant
 {
     public class MerchantCustomerServices : IMerchantCustomerServices
     {
-        public Task<bool> CreateCategoryAsync(CreateCategoryDto dto)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public MerchantCustomerServices(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> DeleteCategoryAsync(int categoryId)
+        public async Task<CustomerDto?> GetCustomerByIdAsync(string userId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(userId))
+                return null;
+
+            var user = await _unitOfWork.ProfileRepository.Search(u => u.Id == userId && !u.IsDeleted);
+            if (user == null)
+                return null;
+
+            return new CustomerDto
+            {
+                UserId = user.Id,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
         }
 
-        public Task<PagedResult<CategoryDto>> GetAllCategoriesAsync(int page = 1, int pageSize = 10)
+        public async Task<int> GetCustomerCountAsync(int storeId)
         {
-            throw new NotImplementedException();
+            var allOrders = await _unitOfWork.OrderRepository.GetAllIncluding(o => o.CustomerId);
+            return allOrders
+                .Where(o => o.StoreId == storeId)
+                .Select(o => o.CustomerId)
+                .Distinct()
+                .Count();
+        }
+        public async Task<PagedResult<CustomerDto>> GetCustomersByStoreIdAsync(int storeId, int page = 1, int pageSize = 10)
+        {
+            var allOrders = await _unitOfWork.OrderRepository.GetAllIncluding(
+                o => o.UserStore
+            );
+
+            var customerIds = allOrders
+                .Where(o => o.StoreId == storeId)
+                .Select(o => o.CustomerId.ToString())
+                .Distinct()
+                .ToList();
+
+            var allCustomers = await _unitOfWork.ProfileRepository.GetAllIncluding();
+
+            var customers = allCustomers
+                .Where(c => customerIds.Contains(c.Id))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var totalCount = customerIds.Count;
+
+            var customerDtos = customers.Select(c => new CustomerDto
+            {
+                UserId = c.Id,
+                FullName = $"{c.FirstName} {c.LastName}",
+                Email = c.Email,
+                PhoneNumber = c.PhoneNumber
+            }).ToList();
+
+            return new PagedResult<CustomerDto>(customerDtos, totalCount, page, pageSize);
         }
 
-        public Task<CategoryDto?> GetCategoryByIdAsync(int categoryId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CustomerDto?> GetCustomerByIdAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetCustomerCountAsync(int storeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PagedResult<CustomerDto>> GetCustomersByStoreIdAsync(int storeId, int page = 1, int pageSize = 10)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetProductCountByCategoryIdAsync(int categoryId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateCategoryAsync(int categoryId, UpdateCategoryDto dto)
-        {
-            throw new NotImplementedException();
-        }
+     
     }
 }

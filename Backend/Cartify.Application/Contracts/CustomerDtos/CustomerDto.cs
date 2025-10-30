@@ -12,8 +12,6 @@ namespace Cartify.Application.Contracts.CustomerDtos
         public string FullName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public int TotalOrders { get; set; }
-        public decimal TotalSpent { get; set; }
     }
 
 }
