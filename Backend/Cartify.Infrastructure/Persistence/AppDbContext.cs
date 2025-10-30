@@ -425,7 +425,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
                  .HasForeignKey<TblUser>(u => u.UserStoreId)
                  .OnDelete(DeleteBehavior.ClientSetNull)
                  .HasConstraintName("FK_TblUserStore_Merchant");
-            entity.HasKey(e => e.UserStorId);
+            entity.HasKey(e => e.UserStoreId);
             entity.ToTable("TblUserStore");
             entity.HasIndex(e => e.InventoryId, "IX_TblUserStore_InventoryId");
 
@@ -461,26 +461,29 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
 
         modelBuilder.Entity<TblUser>(entity =>
         {
+            entity
+              .HasMany(u => u.StoresPurchasedFrom)
+              .WithMany(s => s.Customers)
+              .UsingEntity<Dictionary<string, object>>(
+                  "TblUserStoreCustomers",
+                  j => j
+                      .HasOne<TblUserStore>()
+                      .WithMany()
+                      .HasForeignKey("UserStoreId")
+                      .HasConstraintName("FK_UserStoreCustomers_UserStore")
+                      .OnDelete(DeleteBehavior.Cascade),
+                  j => j
+                      .HasOne<TblUser>()
+                      .WithMany()
+                      .HasForeignKey("UserId")
+                      .HasConstraintName("FK_UserStoreCustomers_User")
+                      .OnDelete(DeleteBehavior.Cascade),
+                  j =>
+                  {
+                      j.HasKey("UserStoreId", "UserId");
+                      j.ToTable("TblUserStoreCustomers");
+                  });
 
-            modelBuilder.Entity<TblUser>()
-                .HasMany(u => u.StoresPurchasedFrom)
-                .WithMany(s => s.Customers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "TblUserStoreCustomers", j => j
-                            .HasOne<TblUserStore>()
-                            .WithMany()
-                            .HasForeignKey("UserStoreId")
-                            .HasConstraintName("FK_UserStoreCustomers_UserStore")
-                            .OnDelete(DeleteBehavior.Cascade), j => j
-                            .HasOne<TblUser>()
-                            .WithMany()
-                            .HasForeignKey("UserId")
-                            .HasConstraintName("FK_UserStoreCustomers_User")
-                            .OnDelete(DeleteBehavior.Cascade), j =>
-                            {
-                                j.HasKey("UserStoreId", "UserId");
-                                j.ToTable("TblUserStoreCustomers");
-                            });
             entity.OwnsMany(u => u.RefreshTokens, rt =>
             {
                 rt.WithOwner().HasForeignKey("UserId");
@@ -491,20 +494,27 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
                 rt.Property(t => t.CreatedOn).IsRequired();
                 rt.Property(t => t.RevokedOn);
             });
+
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_TblUsers_CreatedDate")
                 .HasColumnType("datetime");
+
             entity.Property(e => e.DeletedDate).HasColumnType("datetime");
+
             entity.Property(e => e.Email)
                 .IsRequired()
                 .HasMaxLength(150)
                 .IsUnicode(false);
+
             entity.Property(e => e.FirstName)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.IsDeleted).HasAnnotation("Relational:DefaultConstraintName", "DF_TblUsers_IsDeleted_1");
+
+            entity.Property(e => e.IsDeleted)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_TblUsers_IsDeleted_1");
+
             entity.Property(e => e.LastName)
                 .IsRequired()
                 .HasMaxLength(50)

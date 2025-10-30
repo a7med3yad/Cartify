@@ -119,7 +119,7 @@ namespace Cartify.Application.Services.Implementation.Merchant
             );
 
             var productsQuery = allProducts
-                .Where(p => p.UserStoreId == store.UserStorId && !p.IsDeleted)
+                .Where(p => p.UserStoreId == store.UserStoreId && !p.IsDeleted)
                 .AsQueryable();
 
             var totalCount = productsQuery.Count();

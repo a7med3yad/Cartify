@@ -28,7 +28,7 @@ public partial class TblUser : IdentityUser
 
     public int? DeletedBy { get; set; }
     public DateTime? DeletedDate { get; set; }
-    public int  UserStoreId { get; set; }
+    public int?UserStoreId { get; set; }
     public virtual ICollection<TblAddress> TblAddresses { get; set; } = new List<TblAddress>();
     public virtual TblUserStore UserStore { get; set; }
     public virtual ICollection<TblUserStore> StoresPurchasedFrom { get; set; } = new List<TblUserStore>();

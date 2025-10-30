@@ -29,13 +29,16 @@ namespace Cartify.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // 🔧 Load configurations
             builder.Configuration
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddUserSecrets<Program>()
-                .AddEnvironmentVariables();
+               .AddJsonFile("appsettings.json", optional: false)
+               .AddUserSecrets<Program>()
+               .AddEnvironmentVariables();
 
+            // 🧾 Controllers
             builder.Services.AddControllers();
 
+            // 🌐 CORS Policy
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
@@ -47,35 +50,43 @@ namespace Cartify.API
                 });
             });
 
+            // 🧩 Database Context
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // 👤 Identity Configuration
             builder.Services.AddIdentityCore<TblUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            // Authentication services
+            // 👥 User Services
             builder.Services.AddScoped<IUserService, UserService>();
+
+            // 🔐 Authentication Services
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IRegisterService, RegisterService>();
             builder.Services.AddScoped<ICreateJWTToken, CreateJWTToken>();
             builder.Services.AddScoped<IResetPassword, ResetPassword>();
 
-            // AWS S3
+            // ☁️ Amazon S3 Configuration
             builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
             builder.Services.AddAWSService<IAmazonS3>();
             builder.Services.AddScoped<IFileStorageService, S3FileStorageService>();
 
-            // Infrastructure
+            // 🧱 Infrastructure Repositories
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // 📧 Helpers
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ICreateMerchantProfile, CreateMerchantProfile>();
 
-            // Profile + Merchant
+            // 👤 Profile Services
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
             builder.Services.AddScoped<IProfileServices, ProfileServices>();
+
+            // 🛍️ Merchant Services
             builder.Services.AddScoped<IMerchantProductServices, MerchantProductServices>();
             builder.Services.AddScoped<IMerchantCategoryServices, MerchantCategoryServices>();
             builder.Services.AddScoped<IMerchantCustomerServices, MerchantCustomerServices>();
@@ -84,29 +95,30 @@ namespace Cartify.API
             builder.Services.AddScoped<IMerchantTransactionServices, MerchantTransactionServices>();
             builder.Services.AddScoped<IMerchantProfileServices, MerchantProfileServices>();
 
+            // 🧭 Mapping + Configurations
             builder.Services.AddAutoMapper(typeof(MappingProfile));
-
             builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
             builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
             builder.Services.AddHttpContextAccessor();
 
+            // 🧾 Swagger + OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(option =>
             {
                 var filepath = Path.Combine(AppContext.BaseDirectory, "Cartify.API.xml");
                 option.IncludeXmlComments(filepath);
                 option.SwaggerDoc("v1",
-                   new OpenApiInfo
-                   {
-                       Title = "Cartify API",
-                       Version = "v1",
-                       Description = "ASP.NET Core WebAPI for Ecommerce",
-                       Contact = new OpenApiContact
-                       {
-                           Name = "Ahmed Ayad",
-                           Email = "ahmed.ibrahim01974@gmail.com",
-                       },
-                   });
+                    new OpenApiInfo
+                    {
+                        Title = "Cartify API",
+                        Version = "v1",
+                        Description = "ASP.NET Core WebAPI for Ecommerce",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Ahmed Ayad",
+                            Email = "ahmed.ibrahim01974@gmail.com",
+                        },
+                    });
                 option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -124,30 +136,35 @@ namespace Cartify.API
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = JwtBearerDefaults.AuthenticationScheme
-                            }
+                            },
+                            In = ParameterLocation.Header,
+                            Name = "Authorization"
                         },
                         new List<string>()
                     }
                 });
             });
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+            // 🔑 JWT Authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = true,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
 
             var app = builder.Build();
 
+            // 🚀 HTTP Pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseCors("AllowFrontend");
@@ -161,6 +178,7 @@ namespace Cartify.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+
             app.Run();
         }
     }

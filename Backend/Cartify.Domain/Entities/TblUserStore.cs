@@ -7,7 +7,7 @@ namespace Cartify.Domain.Models;
 
 public partial class TblUserStore
 {
-    public int UserStorId { get; set; }
+    public int UserStoreId { get; set; }
     public string MerchantId { get; set; }
     public virtual TblUser Merchant { get; set; }
     public string StoreName { get; set; }
