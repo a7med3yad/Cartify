@@ -27,13 +27,11 @@ public partial class TblUser : IdentityUser
     public int? UpdatedBy { get; set; }
 
     public int? DeletedBy { get; set; }
-
     public DateTime? DeletedDate { get; set; }
-
+    public int  UserStoreId { get; set; }
     public virtual ICollection<TblAddress> TblAddresses { get; set; } = new List<TblAddress>();
-
-    public virtual ICollection<TblUserStore> TblUserStores { get; set; } = new List<TblUserStore>();
-
-	public List<RefreshToken>? RefreshTokens { get; set; }
+    public virtual TblUserStore UserStore { get; set; }
+    public virtual ICollection<TblUserStore> StoresPurchasedFrom { get; set; } = new List<TblUserStore>();
+    public List<RefreshToken>? RefreshTokens { get; set; }
 	public List<PasswordResetCode>? PasswordResetCodes { get; set; } = new List<PasswordResetCode>();
 }

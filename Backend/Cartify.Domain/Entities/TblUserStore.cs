@@ -8,28 +8,19 @@ namespace Cartify.Domain.Models;
 public partial class TblUserStore
 {
     public int UserStorId { get; set; }
-
-    public string UserId { get; set; }
-
+    public string MerchantId { get; set; }
+    public virtual TblUser Merchant { get; set; }
     public string StoreName { get; set; }
-
     public int? InventoryId { get; set; }
-
     public int? CategoryId { get; set; }
-
     public int? CreatedBy { get; set; }
-
     public bool IsDeleted { get; set; }
-
     public DateTime CreatedDate { get; set; }
-
     public int? UpdatedBy { get; set; }
-
     public int? DeletedBy { get; set; }
-
     public DateTime? DeletedDate { get; set; }
-
     public virtual TblInventory? Inventory { get; set; }
-
+    public virtual ICollection<TblUser> Customers { get; set; } = new List<TblUser>();
+    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
     public virtual ICollection<TblProduct> TblProducts { get; set; } = new List<TblProduct>();
 }

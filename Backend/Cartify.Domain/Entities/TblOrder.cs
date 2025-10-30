@@ -13,6 +13,7 @@ public partial class TblOrder
 
     public int OrderStatuesId { get; set; }
 
+    public int StoreId { get; set; }
     public int PaymentTypeId { get; set; }
 
     public decimal TotalPrice { get; set; }
@@ -36,9 +37,8 @@ public partial class TblOrder
     public int? UpdatedBy { get; set; }
 
     public int? DeletedBy { get; set; }
-
     public DateTime? DeletedDate { get; set; }
-
+    public virtual TblUserStore UserStore { get; set; }
     public virtual LkpOrderStatue OrderStatues { get; set; }
 
     public virtual LkpPaymentType PaymentType { get; set; }

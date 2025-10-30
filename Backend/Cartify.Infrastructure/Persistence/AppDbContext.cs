@@ -17,7 +17,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
         : base(options)
     {
     }
-   
+
 
     public virtual DbSet<LkpMeasureUnite> LkpMeasureUnites { get; set; }
     public virtual DbSet<LkpOrderStatue> LkpOrderStatues { get; set; }
@@ -45,17 +45,17 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-		var UserId = "8e75dee3-74df-43c8-8ded-ca9179be3480";
-		var MerchantId = "fdcd17c2-f208-45cc-98d1-e80720cf7896";
-		var AdminId = "c9ec0699-f839-4e8d-9bd3-12685ac984ab";
-		var Roles = new List<IdentityRole>();
-		Roles.Add(new IdentityRole {Id=UserId,Name="User",NormalizedName="USER" ,ConcurrencyStamp=UserId });
-		Roles.Add(new IdentityRole {Id=MerchantId,Name="Merchant",NormalizedName="MERCHANT",ConcurrencyStamp=MerchantId });
-		Roles.Add(new IdentityRole {Id=AdminId,Name="Admin",NormalizedName="ADMIN",ConcurrencyStamp= AdminId });
-		modelBuilder.Entity<IdentityRole>().HasData(Roles);
+        var UserId = "8e75dee3-74df-43c8-8ded-ca9179be3480";
+        var MerchantId = "fdcd17c2-f208-45cc-98d1-e80720cf7896";
+        var AdminId = "c9ec0699-f839-4e8d-9bd3-12685ac984ab";
+        var Roles = new List<IdentityRole>();
+        Roles.Add(new IdentityRole { Id = UserId, Name = "User", NormalizedName = "USER", ConcurrencyStamp = UserId });
+        Roles.Add(new IdentityRole { Id = MerchantId, Name = "Merchant", NormalizedName = "MERCHANT", ConcurrencyStamp = MerchantId });
+        Roles.Add(new IdentityRole { Id = AdminId, Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = AdminId });
+        modelBuilder.Entity<IdentityRole>().HasData(Roles);
 
 
-		base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
 
 
         modelBuilder.Entity<LkpMeasureUnite>(entity =>
@@ -195,7 +195,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
             entity.ToTable("TblInventory");
 
             entity.HasIndex(e => e.ProductDetailId, "IX_TblInventory_ProductDetailId")
-                .IsUnique(); 
+                .IsUnique();
 
             entity.Property(e => e.InventoryId).ValueGeneratedNever();
 
@@ -207,7 +207,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
                 .HasColumnType("datetime");
 
             entity.HasOne(d => d.ProductDetail)
-                .WithOne(p => p.Inventory) 
+                .WithOne(p => p.Inventory)
                 .HasForeignKey<TblInventory>(d => d.ProductDetailId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TblInventory_TblProductDetails1");
@@ -217,6 +217,13 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
         modelBuilder.Entity<TblOrder>(entity =>
         {
             entity.HasKey(e => e.OrderId);
+            entity.HasIndex(e => e.StoreId, "IX_TblOrders_UserStoreId");
+
+            entity.HasOne(d => d.UserStore)
+                .WithMany(p => p.TblOrders)
+                .HasForeignKey(d => d.StoreId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TblOrders_TblUserStore");
 
             entity.HasIndex(e => e.OrderStatuesId, "IX_TblOrders_OrderStatuesId");
 
@@ -251,6 +258,8 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
                 .HasForeignKey(d => d.ShipmentMethodId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TblOrders_LkpShipementMethods");
+
+
         });
 
         modelBuilder.Entity<TblOrderDetail>(entity =>
@@ -309,6 +318,7 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
                 .HasForeignKey(d => d.UserStoreId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TblProducts_TblUserStore1");
+
         });
 
         modelBuilder.Entity<TblProductDetail>(entity =>
@@ -410,13 +420,15 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
         });
         modelBuilder.Entity<TblUserStore>(entity =>
         {
+            entity.HasOne(s => s.Merchant)
+                 .WithOne(u => u.UserStore)
+                 .HasForeignKey<TblUser>(u => u.UserStoreId)
+                 .OnDelete(DeleteBehavior.ClientSetNull)
+                 .HasConstraintName("FK_TblUserStore_Merchant");
             entity.HasKey(e => e.UserStorId);
-
             entity.ToTable("TblUserStore");
-
             entity.HasIndex(e => e.InventoryId, "IX_TblUserStore_InventoryId");
 
-            entity.HasIndex(e => e.UserId, "IX_TblUserStore_UserId");
 
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -426,8 +438,8 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
 
             entity.HasOne(d => d.Inventory).WithMany(p => p.TblUserStores)
                 .HasForeignKey(d => d.InventoryId)
-				.IsRequired(false)
-				.OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TblUserStore_TblInventory");
         });
 
@@ -449,17 +461,37 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
 
         modelBuilder.Entity<TblUser>(entity =>
         {
-			entity.OwnsMany(u => u.RefreshTokens, rt =>
-			{
-				rt.WithOwner().HasForeignKey("UserId");
-				rt.Property<int>("Id");
-				rt.HasKey("Id");
-				rt.Property(t => t.Token).IsRequired();
-				rt.Property(t => t.ExpiresOn).IsRequired();
-				rt.Property(t => t.CreatedOn).IsRequired();
-				rt.Property(t => t.RevokedOn);
-			});
-			entity.Property(e => e.CreatedDate)
+
+            modelBuilder.Entity<TblUser>()
+                .HasMany(u => u.StoresPurchasedFrom)
+                .WithMany(s => s.Customers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TblUserStoreCustomers", j => j
+                            .HasOne<TblUserStore>()
+                            .WithMany()
+                            .HasForeignKey("UserStoreId")
+                            .HasConstraintName("FK_UserStoreCustomers_UserStore")
+                            .OnDelete(DeleteBehavior.Cascade), j => j
+                            .HasOne<TblUser>()
+                            .WithMany()
+                            .HasForeignKey("UserId")
+                            .HasConstraintName("FK_UserStoreCustomers_User")
+                            .OnDelete(DeleteBehavior.Cascade), j =>
+                            {
+                                j.HasKey("UserStoreId", "UserId");
+                                j.ToTable("TblUserStoreCustomers");
+                            });
+            entity.OwnsMany(u => u.RefreshTokens, rt =>
+            {
+                rt.WithOwner().HasForeignKey("UserId");
+                rt.Property<int>("Id");
+                rt.HasKey("Id");
+                rt.Property(t => t.Token).IsRequired();
+                rt.Property(t => t.ExpiresOn).IsRequired();
+                rt.Property(t => t.CreatedOn).IsRequired();
+                rt.Property(t => t.RevokedOn);
+            });
+            entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_TblUsers_CreatedDate")
                 .HasColumnType("datetime");
