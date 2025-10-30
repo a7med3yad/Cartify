@@ -36,8 +36,4 @@
     <ProjectReference Include="..\Cartify.Domain\Cartify.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Interfaces\Merchant\" />
-  </ItemGroup>
-
 </Project>

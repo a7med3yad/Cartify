@@ -7,6 +7,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
     <BaseOutputPath>APIDocs</BaseOutputPath>
+    <UserSecretsId>9dfb87dc-769a-4385-868b-e471f11bb827</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

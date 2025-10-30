@@ -1,11 +1,18 @@
 using Cartify.Application.Contracts.CategoryDtos;
 using Cartify.Application.Services.Interfaces.Merchant;
+using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Infrastructure.Implementation.Repository;
 
 namespace Cartify.Application.Services.Implementation.Merchant
 {
     public class MerchantCategoryServices : IMerchantCategoryServices
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public MerchantCategoryServices(IUnitOfWork unitOfWork)
+        {
+            this._unitOfWork = unitOfWork;
+        }
         public Task<bool> CreateCategoryAsync(CreateCategoryDto dto)
         {
             throw new NotImplementedException();
