@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cartify.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class siuuuuuuu : Migration
+    public partial class a : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -110,6 +110,8 @@ namespace Cartify.Infrastructure.Migrations
                     PromotionId = table.Column<int>(type: "int", nullable: false),
                     PromotionName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DiscountPercentage = table.Column<decimal>(type: "decimal(9,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
                     ImgUrl = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime", nullable: false)
