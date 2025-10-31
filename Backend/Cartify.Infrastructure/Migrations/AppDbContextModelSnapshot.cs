@@ -205,6 +205,11 @@ namespace Cartify.Infrastructure.Migrations
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DeletedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(9, 2)");
 
@@ -216,6 +221,11 @@ namespace Cartify.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("PromotionName")
                         .IsRequired()

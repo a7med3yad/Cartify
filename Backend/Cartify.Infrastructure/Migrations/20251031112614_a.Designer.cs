@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cartify.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251031003541_siuuuuuuu")]
-    partial class siuuuuuuu
+    [Migration("20251031112614_a")]
+    partial class a
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,6 +208,11 @@ namespace Cartify.Infrastructure.Migrations
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DeletedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(9, 2)");
 
@@ -219,6 +224,11 @@ namespace Cartify.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("PromotionName")
                         .IsRequired()

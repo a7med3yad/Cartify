@@ -29,14 +29,19 @@ namespace Cartify.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 🔧 Load configurations
-            builder.Configuration
-               .AddJsonFile("appsettings.json", optional: false)
-               .AddUserSecrets<Program>()
-               .AddEnvironmentVariables();
+			builder.Configuration
+	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+	.AddUserSecrets<Program>() // أو <Startup> حسب الكلاس الأساسي عندك
+	.AddEnvironmentVariables();
 
-            // 🧾 Controllers
-            builder.Services.AddControllers();
+			// 🔧 Load configurations
+			//builder.Configuration
+			//   .AddJsonFile("appsettings.json", optional: false)
+			//   .AddUserSecrets<Program>()
+			//   .AddEnvironmentVariables();
+
+			// 🧾 Controllers
+			builder.Services.AddControllers();
 
             // 🌐 CORS Policy
             builder.Services.AddCors(options =>
@@ -115,8 +120,8 @@ namespace Cartify.API
                         Description = "ASP.NET Core WebAPI for Ecommerce",
                         Contact = new OpenApiContact
                         {
-                            Name = "Ahmed Ayad",
-                            Email = "ahmed.ibrahim01974@gmail.com",
+                            Name = "Taqeyy",
+                            Email = "atakieeldeen@gmail.com",
                         },
                     });
                 option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
