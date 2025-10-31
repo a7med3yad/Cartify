@@ -13,8 +13,10 @@ public partial class LkpPromotion
 
     public decimal DiscountPercentage { get; set; }
 
+    public bool IsDeleted { get; set; }
+    public DateTime DeletedDate { get; set; }
+    public string ImgUrl { get; set; }
     public DateTime StartDate { get; set; }
-
     public DateTime EndDate { get; set; }
 
     public virtual ICollection<TblProductDetail> ProductDetails { get; set; } = new List<TblProductDetail>();

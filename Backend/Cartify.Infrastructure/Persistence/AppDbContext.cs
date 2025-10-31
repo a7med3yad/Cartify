@@ -119,7 +119,14 @@ public partial class AppDbContext : IdentityDbContext<TblUser>
         modelBuilder.Entity<LkpPromotion>(entity =>
         {
             entity.HasKey(e => e.PromotionId);
-
+            entity.Property(e => e.DeletedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e=> e.ImgUrl)
+                .IsRequired()
+                .HasMaxLength(255)
+                .IsUnicode(false);
             entity.Property(e => e.PromotionId).ValueGeneratedNever();
             entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(9, 2)");
             entity.Property(e => e.EndDate).HasColumnType("datetime");
