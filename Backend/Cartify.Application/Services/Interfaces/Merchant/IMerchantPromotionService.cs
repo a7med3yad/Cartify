@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Cartify.Application.Contracts.PromotionsDtos;
+using Cartify.Application.Contracts.PromotionDtos;
 
 namespace Cartify.Application.Services.Interfaces.Merchant
 {
