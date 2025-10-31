@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Cartify.Application.Contracts;
+﻿using Cartify.Application.Contracts;
 using Cartify.Application.Contracts.CategoryDtos;
 using Cartify.Application.Contracts.ProductDtos;
+using Cartify.Application.Services.Implementation.Helper;
 using Cartify.Application.Services.Interfaces.Merchant;
 using Cartify.Domain.Interfaces.Repositories;
 using Cartify.Domain.Models;
 using Cartify.Infrastructure.Implementation.Repository;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Cartify.Application.Services.Implementation.Merchant
 {
@@ -16,13 +18,21 @@ namespace Cartify.Application.Services.Implementation.Merchant
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileStorageService _fileStorageService;
+        private readonly GetUserServices _getUserServices;
 
-        public MerchantCategoryServices(IUnitOfWork unitOfWork, IFileStorageService fileStorageService)
+        public MerchantCategoryServices(
+            IUnitOfWork unitOfWork,
+            IFileStorageService fileStorageService,
+            GetUserServices getUserServices)
         {
             _unitOfWork = unitOfWork;
             _fileStorageService = fileStorageService;
+            _getUserServices = getUserServices;
         }
 
+        // =========================================================
+        // 🔹 CREATE CATEGORY
+        // =========================================================
         public async Task<bool> CreateCategoryAsync(CreateCategoryDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.CategoryName))
@@ -32,32 +42,35 @@ namespace Cartify.Application.Services.Implementation.Merchant
                 .Search(c => c.CategoryName == dto.CategoryName && !c.IsDeleted);
 
             if (existingCategory != null)
-                return false; 
+                return false;
 
+            // 🧩 Extract merchant info from Token
+            var merchantId = _getUserServices.GetMerchantIdFromToken();
+            var merchantName = _getUserServices.GetUserNameFromToken() ?? "merchant";
+
+            // Upload image if provided
             string? imageUrl = null;
             if (dto.Image != null)
-            {
-                imageUrl = await _fileStorageService.UploadFileAsync(dto.Image, "categories");
-            }
+                imageUrl = await _fileStorageService.UploadFileAsync(dto.Image, $"categories/{merchantName}");
 
             var category = new TblCategory
             {
                 CategoryName = dto.CategoryName,
                 CategoryDescription = dto.CategoryDescription,
-                ImageUrl = imageUrl, 
-                IsDeleted = false,
-                CreatedDate = DateTime.UtcNow
+                ImageUrl = imageUrl,
+                CreatedBy = int.TryParse(merchantId, out var id) ? id : 0,
+                CreatedDate = DateTime.UtcNow,
+                IsDeleted = false
             };
 
             await _unitOfWork.CategoryRepository.CreateAsync(category);
-
-            await _unitOfWork.SaveChanges();
-
-            return true;
+            return await _unitOfWork.SaveChanges() > 0;
         }
 
-
-        public async Task<bool> UpdateCategoryAsync(int categoryId, UpdateCategoryDto dto)
+        // =========================================================
+        // 🔹 UPDATE CATEGORY
+        // =========================================================
+        public async Task<bool> UpdateCategoryAsync(int categoryId, CreateCategoryDto dto)
         {
             var category = await _unitOfWork.CategoryRepository.ReadByIdAsync(categoryId);
             if (category == null || category.IsDeleted)
@@ -69,14 +82,23 @@ namespace Cartify.Application.Services.Implementation.Merchant
             if (!string.IsNullOrWhiteSpace(dto.CategoryDescription))
                 category.CategoryDescription = dto.CategoryDescription;
 
-            if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
-                category.ImageUrl = dto.ImageUrl;
+            // 🧩 Handle image update
+            if (dto.Image != null)
+            {
+                var merchantName = _getUserServices.GetUserNameFromToken() ?? "merchant";
+                var newUrl = await _fileStorageService.UploadFileAsync(dto.Image, $"categories/{merchantName}");
+                category.ImageUrl = newUrl;
+            }
+
+            category.UpdatedBy = int.TryParse(_getUserServices.GetMerchantIdFromToken(), out var id) ? id : 0;
 
             _unitOfWork.CategoryRepository.Update(category);
-            await _unitOfWork.SaveChanges();
-            return true;
+            return await _unitOfWork.SaveChanges() > 0;
         }
 
+        // =========================================================
+        // 🔹 DELETE CATEGORY
+        // =========================================================
         public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
             var category = await _unitOfWork.CategoryRepository.ReadByIdAsync(categoryId);
@@ -84,11 +106,16 @@ namespace Cartify.Application.Services.Implementation.Merchant
                 return false;
 
             category.IsDeleted = true;
+            category.DeletedDate = DateTime.UtcNow;
+            category.DeletedBy = int.TryParse(_getUserServices.GetMerchantIdFromToken(), out var id) ? id : 0;
+
             _unitOfWork.CategoryRepository.Update(category);
-            await _unitOfWork.SaveChanges();
-            return true;
+            return await _unitOfWork.SaveChanges() > 0;
         }
 
+        // =========================================================
+        // 🔹 GET ALL CATEGORIES (Paged)
+        // =========================================================
         public async Task<PagedResult<CategoryDto>> GetAllCategoriesAsync(int page = 1, int pageSize = 10)
         {
             var allCategories = await _unitOfWork.CategoryRepository.ReadAsync();
@@ -115,6 +142,9 @@ namespace Cartify.Application.Services.Implementation.Merchant
             return new PagedResult<CategoryDto>(paged, total, page, pageSize);
         }
 
+        // =========================================================
+        // 🔹 GET CATEGORY BY ID
+        // =========================================================
         public async Task<CategoryDto?> GetCategoryByIdAsync(int categoryId)
         {
             var category = await _unitOfWork.CategoryRepository.ReadByIdAsync(categoryId);
@@ -130,12 +160,18 @@ namespace Cartify.Application.Services.Implementation.Merchant
             };
         }
 
+        // =========================================================
+        // 🔹 GET PRODUCT COUNT BY CATEGORY
+        // =========================================================
         public async Task<int> GetProductCountByCategoryIdAsync(int categoryId)
         {
             var allProducts = await _unitOfWork.ProductRepository.ReadAsync();
             return allProducts.Count(p => p.Type.CategoryId == categoryId && !p.IsDeleted);
         }
 
+        // =========================================================
+        // 🔹 GET PRODUCTS BY CATEGORY
+        // =========================================================
         public async Task<PagedResult<ProductDto>> GetProductsByCategoryIdAsync(int categoryId, int page = 1, int pageSize = 10)
         {
             var allProducts = await _unitOfWork.ProductRepository.GetAllIncluding(
@@ -170,6 +206,9 @@ namespace Cartify.Application.Services.Implementation.Merchant
             return new PagedResult<ProductDto>(paged, total, page, pageSize);
         }
 
+        // =========================================================
+        // 🔹 GET PRODUCTS BY SUBCATEGORY
+        // =========================================================
         public async Task<PagedResult<ProductDto>> GetProductsBySubCategoryIdAsync(int subCategoryId, int page = 1, int pageSize = 10)
         {
             var allProducts = await _unitOfWork.ProductRepository.GetAllIncluding(

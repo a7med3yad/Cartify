@@ -29,19 +29,19 @@ namespace Cartify.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-			builder.Configuration
-	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-	.AddUserSecrets<Program>() // أو <Startup> حسب الكلاس الأساسي عندك
-	.AddEnvironmentVariables();
+            builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>() // أو <Startup> حسب الكلاس الأساسي عندك
+    .AddEnvironmentVariables();
 
-			// 🔧 Load configurations
-			//builder.Configuration
-			//   .AddJsonFile("appsettings.json", optional: false)
-			//   .AddUserSecrets<Program>()
-			//   .AddEnvironmentVariables();
+            // 🔧 Load configurations
+            //builder.Configuration
+            //   .AddJsonFile("appsettings.json", optional: false)
+            //   .AddUserSecrets<Program>()
+            //   .AddEnvironmentVariables();
 
-			// 🧾 Controllers
-			builder.Services.AddControllers();
+            // 🧾 Controllers
+            builder.Services.AddControllers();
 
             // 🌐 CORS Policy
             builder.Services.AddCors(options =>
@@ -68,11 +68,15 @@ namespace Cartify.API
             // 👥 User Services
             builder.Services.AddScoped<IUserService, UserService>();
 
+
+
             // 🔐 Authentication Services
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IRegisterService, RegisterService>();
             builder.Services.AddScoped<ICreateJWTToken, CreateJWTToken>();
             builder.Services.AddScoped<IResetPassword, ResetPassword>();
+            builder.Services.AddHttpContextAccessor();
+
 
             // ☁️ Amazon S3 Configuration
             builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
