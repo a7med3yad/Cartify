@@ -43,5 +43,9 @@
 		<ProjectReference Include="..\Cartify.Infrastructure\Cartify.Infrastructure.csproj" PrivateAssets="all" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="logs\" />
+	</ItemGroup>
+
 
 </Project>
