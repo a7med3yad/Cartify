@@ -3,7 +3,7 @@ name: 🚀 Deploy Cartify Backend to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main  # أي push على main = deploy تلقائي
+      - main
 
 jobs:
   build-and-deploy:
@@ -18,19 +18,16 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: 🔍 Show folder structure (debug)
-        run: Get-ChildItem -Recurse | Select-Object FullName
-
       - name: 🧩 Restore dependencies
         run: dotnet restore ./Backend/Cartify.API/Cartify.API.csproj
 
       - name: 🏗️ Build
         run: dotnet build ./Backend/Cartify.API/Cartify.API.csproj --configuration Release --no-restore
 
-      - name: 🚀 Publish
+      - name: 🚀 Publish (.NET 9 self-contained)
         run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
-      - name: 📁 Verify publish output
+      - name: 🧾 Show published files (debug)
         run: Get-ChildItem -Recurse ./publish | Select-Object FullName
 
       - name: 🗜️ Zip publish folder
@@ -43,7 +40,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APPLICATION_NAME }}
           environment_name: ${{ secrets.ENVIRONMENT_NAME }}
-          version_label: v${{ github.run_number }}-${{ github.run_id }}
           region: ${{ secrets.AWS_REGION }}
+          version_label: v${{ github.run_number }}-${{ github.run_id }}
           deployment_package: ./deploy.zip
           use_existing_version_if_available: true
