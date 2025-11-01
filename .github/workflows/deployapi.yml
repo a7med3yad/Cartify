@@ -19,14 +19,16 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore ./Cartify.API/Cartify.API.csproj
-
+        run: dotnet restore ./Backend/Cartify.API/Cartify.API.csproj
 
       - name: 🧩 Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ./Backend/Cartify.API/Cartify.API.csproj --configuration Release --no-restore
 
       - name: 🚀 Publish
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -o ./publish
+
+      - name: 🗜️ Zip publish folder
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
 
       - name: ☁️ Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -37,4 +39,4 @@ jobs:
           environment_name: ${{ secrets.ENVIRONMENT_NAME }}
           version_label: ${{ github.run_number }}
           region: ${{ secrets.AWS_REGION }}
-          deployment_package: ./publish
+          deployment_package: ./deploy.zip
