@@ -2,6 +2,7 @@
 using Cartify.Application.Mappings;
 using Cartify.Application.Services.Implementation;
 using Cartify.Application.Services.Implementation.Authentication;
+using Cartify.Application.Services.Implementation.Helper;
 using Cartify.Application.Services.Implementation.Merchant;
 using Cartify.Application.Services.Implementation.Profile;
 using Cartify.Application.Services.Interfaces.Authentication;
@@ -109,6 +110,9 @@ namespace Cartify.API
             builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("Jwt"));
             builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("Smtp"));
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddScoped<GetUserServices>();
+
 
             // 🧾 Swagger + OpenAPI
             builder.Services.AddEndpointsApiExplorer();
