@@ -191,6 +191,7 @@ namespace Cartify.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            app.MapGet("/", () => "✅ Cartify API is running successfully on AWS Beanstalk!");
 
             app.Run();
         }

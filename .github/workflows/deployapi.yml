@@ -33,6 +33,7 @@ jobs:
       - name: 🗜️ Zip publish folder
         run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip -Force
 
+
       - name: ☁️ Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
