@@ -28,7 +28,7 @@ jobs:
         run: dotnet build ./Backend/Cartify.API/Cartify.API.csproj --configuration Release --no-restore
 
       - name: 🚀 Publish
-        run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -r win-x64 --self-contained false -o ./publish
+        run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
       - name: 📁 Verify publish output
         run: Get-ChildItem -Recurse ./publish | Select-Object FullName
