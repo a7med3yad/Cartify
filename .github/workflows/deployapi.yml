@@ -25,7 +25,7 @@ jobs:
         run: dotnet build ./Backend/Cartify.API/Cartify.API.csproj --configuration Release --no-restore
 
       - name: 🚀 Publish
-        run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -o ./publish
+        run: dotnet publish ./Backend/Cartify.API/Cartify.API.csproj -c Release -r win-x64 --self-contained false -o ./publish
 
       - name: 🗜️ Zip publish folder
         run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
@@ -41,4 +41,3 @@ jobs:
           region: ${{ secrets.AWS_REGION }}
           deployment_package: ./deploy.zip
 
-          
